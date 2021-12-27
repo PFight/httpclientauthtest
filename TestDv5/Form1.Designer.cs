@@ -57,7 +57,7 @@
             this.textBoxAddress.Name = "textBoxAddress";
             this.textBoxAddress.Size = new System.Drawing.Size(307, 20);
             this.textBoxAddress.TabIndex = 35;
-            this.textBoxAddress.Text = "http://localhost/testsite/index.html";
+            this.textBoxAddress.Text = "http://localhost/testsite";
             // 
             // label1
             // 

@@ -16,7 +16,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
@@ -34,18 +33,28 @@ namespace TestDv5
             InitializeComponent();
         }
 
-        private void buttonStart_Click(object sender, EventArgs e)
+        private async void buttonStart_Click(object sender, EventArgs e)
         {
-            var cllient = new MyClient();
-            cllient.UseDefaultCredentials = true;
+            CredentialCache myCache = new CredentialCache();
+            WebRequestHandler handler = new WebRequestHandler()
+            {
+                UseDefaultCredentials = true,
+                AllowAutoRedirect = true,
+                UnsafeAuthenticatedConnectionSharing = true,
+                Credentials = myCache,
+                
+            };
 
+            var httpClient = new HttpClient(handler);
+     
             
             var from = DateTime.Now;
             var countPerSecond = 0;
             working = true;
             while (working)
             {
-                var content = cllient.DownloadString(textBoxAddress.Text);
+                var response = await httpClient.GetAsync(textBoxAddress.Text);
+                var content = await response.Content.ReadAsStringAsync();
                 countPerSecond++;
                 if ((DateTime.Now - from).TotalSeconds >= 1)
                 {
@@ -60,17 +69,6 @@ namespace TestDv5
         private void buttonStop_Click(object sender, EventArgs e)
         {
             working = false;
-        }
-    }
-
-    class MyClient : WebClient
-    {
-        protected override WebRequest GetWebRequest(Uri address)
-        {
-            var request = (HttpWebRequest)base.GetWebRequest(address);
-            request.UnsafeAuthenticatedConnectionSharing = true;
-            request.KeepAlive = true;
-            return request;
         }
     }
 }
